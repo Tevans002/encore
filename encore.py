@@ -52,6 +52,8 @@ MB_MIN_INTERVAL_S = 1.5  # MusicBrainz allows about 1 request/second per IP; lea
 #----------MODULE GLOBALS----------
 _last_mb_call = 0.0
 _lb_wait_until = 0.0
+# --- fault injection (Part 7) ---
+_INJECT = {"transient_rate": 0.0, "seed": 0, "max_steps": None, "_rng": random.Random(0)}
 
 _HOT_CONN: sqlite3.Connection | None = None   # set at session start (TODO 3)
 _EPISODIC = None   # chromadb.Collection, set at session start (TODO 3)
@@ -182,7 +184,14 @@ def classify_status(status: int) -> str:
 
 def http(method: str, url: str, *, params=None, body=None, auth=False, timeout=READ_TIMEOUT_S):
     """One polite request. Returns (status, json_or_text, headers). Status 0 = no response."""
-    global _last_mb_call, _lb_wait_until
+    global _last_mb_call, _lb_wait_until, _INJECT
+    # --- fault injection: synthetic transient failure before the network ---
+    if _INJECT.get("transient_rate", 0.0) > 0 and (
+            url.startswith(LB_API) or url.startswith(MB_API)):
+        if _INJECT["_rng"].random() < _INJECT["transient_rate"]:
+            status = _INJECT["_rng"].choice([429, 503])
+            return status, f"injected {status}", {}
+
     if url.startswith(MB_API):
         wait = _last_mb_call + MB_MIN_INTERVAL_S - time.monotonic()
         if wait > 0:
@@ -210,6 +219,19 @@ def http(method: str, url: str, *, params=None, body=None, auth=False, timeout=R
 def backoff_delays(attempts: int = 4, base: float = 1.0, cap: float = 30.0):
     """Exponential backoff with full jitter. The LOOP retries transient errors, never the model."""
     return [random.uniform(0, min(cap, base * 2 ** i)) for i in range(attempts)]
+
+# part 7
+def load_inject(path: str) -> None:
+    """Load --inject JSON: transient_rate, seed, max_steps."""
+    global _INJECT
+    with open(path, "r", encoding="utf-8") as f:
+        cfg = json.load(f)
+    rate = float(cfg.get("transient_rate", 0.0))
+    seed = int(cfg.get("seed", 0))
+    _INJECT = {"transient_rate": max(0.0, min(1.0, rate)),
+               "seed": seed,
+               "max_steps": cfg.get("max_steps"),
+               "_rng": random.Random(seed)}
 
 #----------PROVIDED TOOLS----------
 def get_recent_listens(count: int = 25) -> str:
@@ -1793,13 +1815,14 @@ def run_session(mode: str) -> None:
 
     messages = [{"role": "user", "content": start["context"]}]
     steps = 0
+    step_limit = _INJECT.get("max_steps") or MAX_STEPS # added
     tool_results_since_compress = 0
 
     with open(trace_path, "a", encoding="utf-8") as fh:
         _trace(fh, session_id, "route", model=model_for("cheap", mode), tier="cheap",
                message=f"domains={route['domains']} tools={available}")
         try:
-            while steps < MAX_STEPS:
+            while steps < step_limit:
                 steps += 1
                 outbound = _messages_with_rules(rules, messages)
                 t0 = time.monotonic()
@@ -1843,7 +1866,7 @@ def run_session(mode: str) -> None:
                         return
                     # Loop override (Part 4): model can't claim answered if budget hit
                     status = args["status"]
-                    if steps >= MAX_STEPS and status not in ("budget_exceeded",):
+                    if steps >= step_limit and status not in ("budget_exceeded",):
                         status = "budget_exceeded"
                     _trace(fh, session_id, "final", tier="expensive", model=model_for("expensive", mode),
                         message=f"status={status} confidence={args['confidence']}")
@@ -1983,8 +2006,12 @@ if __name__ == "__main__":
     parser.add_argument("mode", choices=["online", "offline"])
     parser.add_argument("--forget", action="store_true")
     parser.add_argument("--now", default=None, help="ISO date to simulate time passing (retention)")
+    parser.add_argument("--inject", default=None,
+                        help="JSON file with transient_rate, seed, max_steps")
     args = parser.parse_args()
 
+    if args.inject:
+        load_inject(args.inject)
     if args.forget:
         forget_user(ENCORE_USER_ID)
     else:

@@ -188,6 +188,9 @@ One JSONL per session in traces/, one line per event
 (route | llm_call | tool_call | approval | memory_read | memory_write | compress | final)
 with model, tier, token counts, latency, and tool args/results.
 
+**Evaluation**
+injection is per-attempt; single-call sessions at 0.3 rarely trigger, so failure-category requests use multi-call prompts and/or a higher rate.
+
 # Export manual check
 
 Date and result of the manual Spotify/Apple Music export check:
