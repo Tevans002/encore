@@ -1,0 +1,9 @@
+chromadb>=1.0        # vector store and default embedding model (05, 07, 08)
+tokenizers>=0.15     # exact token counts for chunking (07, 08); comes with chromadb
+pypdf>=3.17          # PDF text extraction (08)
+neo4j>=5.8           # graph driver (04); the server runs separately, see NEO4J_SETUP.md
+
+# Optional
+# rank_bm25              # hybrid search (docs/embeddings_and_retrieval.md)
+# sentence-transformers  # your own embedding model, the bonus (large: installs PyTorch)
+# redis                  # Redis version of the hot store (docs/hot_state.md)

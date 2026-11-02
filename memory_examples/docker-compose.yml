@@ -1,0 +1,22 @@
+# Neo4j for the Chapter 7 examples.
+#
+#   mkdir neo4j_data           once, before the first start
+#   docker compose up -d       start
+#   docker compose logs -f     watch startup (wait for "Started.")
+#   docker compose down        stop and remove (data is kept in ./neo4j_data)
+#
+# Browser:  http://localhost:7474   (neo4j / password)
+# Bolt:     bolt://localhost:7687
+
+services:
+  neo4j:
+    image: neo4j:2026.07.1
+    container_name: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password   # only applied the first time
+    volumes:
+      - ./neo4j_data:/data
+    restart: unless-stopped

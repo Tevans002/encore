@@ -1,0 +1,7 @@
+# Encore midterm (the course requirements.txt already covers most of these)
+requests>=2.31
+python-dotenv>=1.0
+jsonschema>=4.21
+chromadb>=0.5.0      # episodic and semantic memory
+pytest>=8.2
+# rank_bm25          # uncomment if you choose hybrid search (Part 5)
