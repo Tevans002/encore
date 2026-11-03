@@ -178,9 +178,17 @@ input errors from the API, prompting a re-read.
 0 means "no feedback" and there is nothing to list). This asymmetry is an API
 fact, not an inconsistency.
 
+- **Evaluation account has a thin listening history** (~10 listens, sourced from
+  YouTube via a scrobbler; no Spotify). This exercises a cold-start profile:
+  history-dependent requests (`get_recent_listens`, `get_feedback`) return thin
+  results, while catalog, discovery, and memory requests are unaffected. The
+  evaluation therefore emphasizes tool correctness, routing, error handling, and
+  memory behaviour over recommendation quality on a rich profile. No synthetic
+  listens were injected.
+
 # Failure mode (WorkBook)
 
-
+Memory pollution (observed): an early session stored the assistant's reply ('I can help you delete all your playlists...') as a key_fact, because the summarizer prompt didn't restrict key_facts to user facts. Fix: strengthened the prompt to forbid storing assistant replies, and deleted the polluted summary. This is exactly the 'quality check should flag it' failure mode — the quality check returned OK because the summary was factually consistent with the transcript; the problem was that the content shouldn't be a key_fact at all.
 
 # Traces
 
@@ -190,6 +198,10 @@ with model, tier, token counts, latency, and tool args/results.
 
 **Evaluation**
 injection is per-attempt; single-call sessions at 0.3 rarely trigger, so failure-category requests use multi-call prompts and/or a higher rate.
+
+the reduced 15-entry glossary (653 tokens) yields 6 chunks at 128 tokens; recall@3 saturates at 100% for both fixed sizes because the corpus is small. A larger KB would differentiate the strategies more.
+
+Section-based chunking improved recall@1 from 90% to 100% (vs. fixed-size 128/256) because each chunk is a single coherent glossary entry; fixed windows straddled entry boundaries, occasionally ranking a neighboring entry first. Recall@3 was 100% for all strategies (the corpus is small enough that the answer is always in the top 3).
 
 # Export manual check
 

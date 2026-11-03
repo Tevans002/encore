@@ -1,0 +1,12 @@
+[
+  {"question": "What is shoegaze?", "answer": "walls of distorted guitar, heavy reverb"},
+  {"question": "What does B-side mean?", "answer": "the secondary track released alongside a single"},
+  {"question": "What kind of music helps you focus?", "answer": "instrumental or low-lyric music chosen to support concentration"},
+  {"question": "How do my plays get logged automatically?", "answer": "A scrobbler app or browser extension sends each play"},
+  {"question": "What is an MBID?", "answer": "a permanent UUID assigned to an entity in MusicBrainz"},
+  {"question": "What format does ListenBrainz use for playlists?", "answer": "JSON Shareable Playlist Format"},
+  {"question": "What does the radio mode parameter control?", "answer": "how adventurous the selection is"},
+  {"question": "What are fresh releases?", "answer": "new albums or singles from artists a user listens to"},
+  {"question": "What does a feedback score of -1 mean?", "answer": "-1 means hated"},
+  {"question": "Why is a User-Agent required?", "answer": "so operators can reach abusive clients"}
+]

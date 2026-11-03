@@ -1571,8 +1571,15 @@ def _summarize_session(messages: list, mode: str) -> dict:
         "decisions (what was created or changed), preferences (likes/dislikes stated), "
         "open_threads (unfinished requests), key_facts (anything worth remembering next session), "
         "errors (mistakes to avoid), topics (2-4 keywords). "
+        "key_facts are durable facts about the USER or their music (e.g. 'Prefers instrumental tracks'), "
+        "NOT the assistant's replies, plans, or questions. Never store the assistant's own words. "
         "Return ONLY the JSON object, with no prose before or after.\n\n"
-        "TRANSCRIPT:\n" + "\n".join(str(m.get("content")) for m in messages if m.get("content"))
+        "TRANSCRIPT:\n" + "\n".join(
+            str(m.get("content")) for m in messages
+            if m.get("content")
+            and "final_answer(" not in str(m.get("content"))
+            and "tool_call" not in str(m.get("content"))
+        )
     )
     msg = chat([{"role": "user", "content": prompt}], mode,
                model=model_for("cheap", mode))
@@ -1716,9 +1723,17 @@ def _wrap_tool_result(result: str) -> str:
     return f"<tool_result>\n{result}\n</tool_result>"
 
 def _approve(name: str, args: dict) -> bool:
-    """Ask the user to approve a write (Part 4). export/delete always ask."""
+    """Ask the user to approve a write (Part 4). export/delete always ask.
+
+    Non-interactive callers (the eval runner) hit EOF on input(); treat that as
+    a decline so the loop returns a resource error instead of crashing.
+    """
     print(f"\n[approval needed] {name}({json.dumps(args)})")
-    ans = input("Approve? [y/N] ").strip().lower()
+    try:
+        ans = input("Approve? [y/N] ").strip().lower()
+    except EOFError:
+        print("[approval] no interactive input; declining.")
+        return False
     return ans in ("y", "yes")
 
 def _compress(fh, session_id, mode, messages: list) -> list:
@@ -1736,7 +1751,7 @@ def _compress(fh, session_id, mode, messages: list) -> list:
     except requests.RequestException:
         return messages
     _trace(fh, session_id, "compress", tier="cheap",
-           message=f"compressed {len(old)} messages")
+       message=f"compressed {len(old)} messages: {summary[:200]}")
     return ([{"role": "system", "content": f"[Summary of earlier conversation]\n{summary}"}]
             + recent)
 
@@ -1791,6 +1806,7 @@ def session_start(first_message: str) -> dict:
                     "episodic": _EPISODIC is not None,
                     "semantic": _SEMANTIC is not None},
         "key_facts": episodic["key_facts"],
+        "summaries": episodic["summaries"],
     }
 
 #----------SESSION LOOP TODO 4/5----------
@@ -1819,8 +1835,11 @@ def run_session(mode: str) -> None:
     tool_results_since_compress = 0
 
     with open(trace_path, "a", encoding="utf-8") as fh:
+        _trace(fh, session_id, "memory_read", tier="cheap",
+            message=f"episodic retrieval: {len(start.get('summaries', []))} summaries, "
+                    f"{len(start.get('key_facts', []))} key_facts")
         _trace(fh, session_id, "route", model=model_for("cheap", mode), tier="cheap",
-               message=f"domains={route['domains']} tools={available}")
+            message=f"domains={route['domains']} tools={available}")
         try:
             while steps < step_limit:
                 steps += 1
@@ -1831,7 +1850,8 @@ def run_session(mode: str) -> None:
                                 tool_choice="auto", model=model_for("cheap", mode))
                 except requests.RequestException as exc:
                     _trace(fh, session_id, "llm_call", tier="cheap", success=False,
-                        error_category="transient", message=f"{type(exc).__name__}: {exc}")
+                           error_category="transient", message=f"{type(exc).__name__}: {exc}")
+                    _trace(fh, session_id, "final", message="status=stuck (llm call failed)")
                     return
 
                 _trace(fh, session_id, "llm_call", model=model_for("cheap", mode), tier="cheap",
@@ -1861,7 +1881,7 @@ def run_session(mode: str) -> None:
                         jsonschema.validate(args, FINAL_ANSWER_SCHEMA["function"]["parameters"])
                     except jsonschema.ValidationError as exc:
                         _trace(fh, session_id, "final", success=False,
-                            message=f"invalid final_answer: {exc.message}")
+                            message=f"status=stuck (invalid final_answer: {exc.message}")
                         print("[stuck] final_answer failed validation.")
                         return
                     # Loop override (Part 4): model can't claim answered if budget hit

@@ -1,6 +1,7 @@
 import encore
 from memory.hot_state import open_store, kv_set, kv_get, kv_forget_user
 from memory.stores import open_client, open_collections
+from datetime import datetime, timezone
 
 # ---------------------------------------------------------------- audit
 tools_names = set(encore.TOOLS)
@@ -97,3 +98,34 @@ c = open_store()
 print("session_preferences:", kv_get(c, encore.ENCORE_USER_ID, "session_preferences", []))
 print("last_recording:", kv_get(c, encore.ENCORE_USER_ID, "last_recording", None))
 print("tool_calls:", kv_get(c, encore.ENCORE_USER_ID, "tool_calls", None))
+
+c = open_client()
+e, s = open_collections(c)
+items = e.get(where={"user_id": encore.ENCORE_USER_ID})
+deleted = 0
+for _id, doc in zip(items["ids"], items["documents"]):
+    if "final_answer(status" in doc:
+        e.delete(ids=[_id])
+        deleted += 1
+        print("deleted:", _id)
+print("total deleted:", deleted)
+print("episodic count now:", e.count())
+
+c = open_client(); e, s = open_collections(c)
+items = e.get(where={"user_id": encore.ENCORE_USER_ID})
+newest = max(zip(items["ids"], items["documents"]), key=lambda p: p[0])
+print("newest:", newest[1][:400])
+print("count:", e.count())
+print("contains assistant reply markers:",
+      any(x in newest[1].lower() for x in ["i can help", "would you like", "let me know"]))
+
+c = open_client(); e, s = open_collections(c)
+items = e.get(where={"user_id": encore.ENCORE_USER_ID})
+now = datetime.now(timezone.utc)
+for _id, meta in zip(items["ids"], items["metadatas"]):
+    ts = meta.get("timestamp", "")
+    try:
+        age_min = (now - datetime.fromisoformat(ts.replace("Z", "+00:00"))).total_seconds() / 60
+    except ValueError:
+        age_min = None
+    print(f"{_id}  age={age_min:.1f}min" if age_min is not None else f"{_id}  ts={ts}")
