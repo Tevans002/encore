@@ -186,7 +186,7 @@ fact, not an inconsistency.
   memory behaviour over recommendation quality on a rich profile. No synthetic
   listens were injected.
 
-# Failure mode (WorkBook)
+# Failure mode
 
 Memory pollution (observed): an early session stored the assistant's reply ('I can help you delete all your playlists...') as a key_fact, because the summarizer prompt didn't restrict key_facts to user facts. Fix: strengthened the prompt to forbid storing assistant replies, and deleted the polluted summary. This is exactly the 'quality check should flag it' failure mode — the quality check returned OK because the summary was factually consistent with the transcript; the problem was that the content shouldn't be a key_fact at all.
 
