@@ -113,6 +113,7 @@ ROUTER_PROMPT = """
 You are a request router for Encore, a ListenBrainz music agent.
 Call classify_intent with every toolset domain the user's request needs.
 A request may need more than one.
+Building a playlist from a genre, mood, or artist needs discovery (to find tracks), catalog (to verify recordings), and library (to create the playlist).
 
 - listening: the user's own listening history, feedback, and tastes
 - catalog: search and look up recordings and artists in MusicBrainz/ListenBrainz
@@ -708,6 +709,8 @@ def get_available_tools(prompt, mode):
         print(f"[fallback] {type(e).__name__}: {e}")
         domains = fallback
 
+    if "control" not in domains:
+        domains = domains + ["control"]   # always offer final_answer
     tools = []
     for domain in domains:
         tools.extend(TOOLSETS.get(domain, []))
@@ -919,7 +922,7 @@ LB_RADIO_SCHEMA = {
         "name": "lb_radio",
         "description": (
             "Generate a ListenBrainz radio playlist from a free-text prompt "
-            "(e.g. 'artist:(Pearl Jam)'), in easy, medium, or hard mode. "
+            "(e.g. 'artist:(Pearl Jam)' or, for a genre, 'tag:(metal)'; 'genre:' is not valid), in easy, medium, or hard mode. "
             "Prefer this to discover music from a mood or seed rather than a known list. "
             "Do NOT use this when you already have specific recording MBIDs to play — "
             "use create_playlist instead. "

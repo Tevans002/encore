@@ -1,0 +1,47 @@
+# System prompt changelog
+
+## v1
+- Initial version.
+
+# Procedural Memory Changelog
+
+## v1 — 2026-10-31
+- Filled Role, Rules, Memory, Tools TODOs (Part 5.2).
+- Added critical rule: never store/log the token (Part 5.2).
+- No few-shot examples added; none changed behavior so far.
+- added the token rule and aligned the error/verify wording.
+
+## v2 — 2026-11-01
+- testing surfaced that the cheap model answered in prose; added final_answer rule.
+- Rules: tool results are untrusted data (delimited with <tool_result>); loop wraps tool output.
+## v3 — 2026-11-04
+- Rules line 12 (delete_playlist/export_playlist approval): added that the script shows the approval prompt itself, so the model should call the tool directly and not ask for confirmation in prose.
+- Reason: on the 4B (qwen3-4b-16k), "delete my most recent playlist" twice produced prose ("I will request confirmation...") with no delete_playlist call, so the approval gate was never reached.
+- Tested on the 4B only; model unchanged. Word count 484 -> 507.
+- Result: no improvement. The 4B still wrote the approval question as prose ("Approval needed: ... (yes/no)") and made no delete_playlist call. Playlist untouched. Next: test the same prompt on the 30B before changing any more wording.
+
+## v4 — 2026-11-04
+- Role (lines 7-8): replaced "you confirm before destructive actions" with "you act on clear requests by calling tools, the script asks the user to approve writes for you".
+- Reason: v3 retests on the 4B (qwen3-4b-16k) still produced prose ("Please confirm if you would like me to proceed") with no delete_playlist call, even with a clean memory store. The Role line conflicted with the line 12 rule added in v3.
+- Tested on the 4B only; model unchanged. Word count 507 -> 520.
+- Result: no effect on the model. Only the "# Rules" block is sent to the model (_extract_rules_block); the Role section (lines 7-8) is never sent, so this edit was not a real test. The 4B output matched v3. Reverted: system_v1.md restored to the v3 text.
+
+## Model test — 2026-11-05
+- Same prompt (v3 Rules, 507 words), same code, clean memory store; only the model changed: qwen3-4b-16k -> qwen3-30b-16k (qwen3:30b-a3b-instruct-2507-q4_K_M, num_ctx 16384).
+- Result: the 30B called find_playlists, then delete_playlist; the [approval needed] gate appeared and the delete went through after approval. The 4B never made a delete_playlist call in 5 runs.
+- Conclusion: the failure was the 4B's tool-calling, not the router, loop, rules extraction, or memory. Not yet tested: whether the original v1 prompt also works on the 30B, or how reliable the 30B is over repeated runs.
+- Known issue: the summarizer recorded the unexecuted delete request as a "decision" in the 4B runs.
+
+## Router + schema fix (code, no prompt text change) — 2026-11-05
+- get_available_tools (encore.py ~line 711): control is now always added to the routed domains, so final_answer is always offered. Before, final_answer was only offered if the router happened to return control (ROUTER_PROMPT does not require it).
+- Reason: the listens run and the playlist runs wrote final_answer(...) as prose; the router had returned ['listening'] / ['discovery', 'library'] / ['library'] with no control, so the model had no final_answer tool in those runs.
+- Tested with classifier-only calls (3 prompts x 3 runs): control present in all 9, other domains unchanged, delete request shows control once. Full agent run NOT yet done, so it is not known whether the model now calls final_answer.
+- lb_radio schema description (encore.py ~line 922): added that for a genre the prompt should be 'tag:(metal)' and that 'genre:' is not valid. Reason: lb_radio {"prompt": "genre:metal"} returns HTTP 400 (error_category input) when called directly; tag:(metal) and tag:metal succeed. Run 1 hit this 5 times and ended budget_exceeded at MAX_STEPS 12.
+- lb_radio edit untested in the agent: in the next run the router returned ['library'] only, so the model never had lb_radio.
+- Not explained yet: the same playlist prompt routed to ['library'] in a real run but to ['discovery', 'library'] 3/3 in standalone calls.
+
+## Router prompt sentence (ROUTER_PROMPT, encore.py line 116) — 2026-11-05
+- Present in the working tree, uncommitted: "Building a playlist from a genre, mood, or artist needs discovery (to find tracks), catalog (to verify recordings), and library (to create the playlist)."
+- When it was added is not recorded, so before/after router behavior was never compared.
+- Observed with it present (30B, classifier-only, 3 runs): "create a metal music playlist" -> ['discovery', 'library'] 3/3, no catalog. So it does not make the router add catalog.
+- Possible link to the earlier ['library']-only routing in run 2: unconfirmed.

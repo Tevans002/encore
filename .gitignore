@@ -15,3 +15,5 @@ encore/memory/hot_state.db
 encore/memory/chroma/
 traces/
 .venv/
+.env.*
+!.env.example
