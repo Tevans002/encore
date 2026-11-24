@@ -17,3 +17,7 @@ traces/
 .venv/
 .env.*
 !.env.example
+
+*.bak
+*.bak2
+*.v3
