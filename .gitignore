@@ -1,5 +1,8 @@
 .env
-memory/
+memory/chroma/
+memory/*.db
+memory/*.db-*
+memory/*.sqlite3
 .cache/
 __pycache__/
 .pytest_cache/
