@@ -3,5 +3,6 @@ requests>=2.31
 python-dotenv>=1.0
 jsonschema>=4.21
 chromadb>=0.5.0      # episodic and semantic memory
+mcp>=2.3,<3          # Open-Meteo MCP client (Forecast FM)
 pytest>=8.2
 # rank_bm25          # uncomment if you choose hybrid search (Part 5)

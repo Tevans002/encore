@@ -173,6 +173,55 @@ def ok(data: Any) -> ToolResult:
 def fail(category: str, message: str) -> ToolResult:
     return ToolResult(False, None, message, category)
 
+SERVER_REASON_CHARS = 300   # cap on third-party text passed on to the model and the trace
+
+
+def _http_fail(what: str, status: int, body: Any) -> ToolResult:
+    """Failure result that keeps the HTTP status and adds the server's own reason.
+
+    The reason is third-party text: one line, capped, and scrubbed of the ListenBrainz
+    token. The loop already wraps every tool result as untrusted data."""
+    detail = ""
+    if isinstance(body, dict):
+        detail = str(body.get("error") or body.get("message") or "")
+    elif isinstance(body, str) and status != 0:
+        detail = body
+    detail = " ".join(detail.split())
+    if LB_TOKEN:
+        detail = detail.replace(LB_TOKEN, "***")
+    detail = detail[:SERVER_REASON_CHARS]
+    msg = f"{what} failed (HTTP {status})."
+    if detail:
+        msg += f" Server said: {detail}"
+    return fail(classify_status(status), msg)
+
+
+def _mbid_problem(value: Any, label: str) -> Optional[str]:
+    """Format check only: is value shaped like an MBID (8-4-4-4-12 hex digits)?
+
+    Says nothing about whether the MBID exists; verify_recordings does that. Returns a
+    message for the model, or None when the format is fine."""
+    if not isinstance(value, str):
+        return f"{label} must be a string MBID; got {type(value).__name__}."
+    ok_shape = (len(value) == 36
+                and all(value[i] == "-" for i in (8, 13, 18, 23))
+                and all(c in "0123456789abcdefABCDEF"
+                        for i, c in enumerate(value) if i not in (8, 13, 18, 23)))
+    if ok_shape:
+        return None
+    return (f"{label} is not a valid MBID (expected 36 characters: 8-4-4-4-12 hex digits "
+            f"with dashes); got {value[:40]!r}. Do not invent MBIDs: get them from a tool result.")
+
+
+def _mbid_list_problem(values: Any, label: str) -> Optional[str]:
+    if not isinstance(values, list):
+        return f"{label} must be a list of MBIDs; got {type(values).__name__}."
+    for i, v in enumerate(values):
+        problem = _mbid_problem(v, f"{label}[{i}]")
+        if problem:
+            return problem
+    return None
+
 
 def classify_status(status: int) -> str:
     if status == 0 or status == 429 or status >= 500:
@@ -360,8 +409,7 @@ def lb_radio(prompt: str, mode: str = "easy") -> str:
                            params={"prompt": prompt, "mode": mode},
                            auth=True, timeout=SLOW_READ_TIMEOUT_S)
     if status != 200:
-        return fail(classify_status(status),
-                    f"ListenBrainz radio request failed (HTTP {status}).").to_json()
+        return _http_fail("ListenBrainz radio request", status, body).to_json()
     payload = body.get("payload", {})
     tracks = payload.get("jspf", {}).get("playlist", {}).get("track", [])
     out = []
@@ -463,12 +511,15 @@ def search_music_knowledge(query: str, n_results: int = 3) -> str:
     return ok({"query": query, "facts": facts}).to_json()
 
 # -----------MY TOOLS WRITE DEFINITIONS---------
-def _encore_playlists_with_title(title: str) -> list[dict]:
-    """Return Encore playlists whose title matches (exact, after the marker)."""
+def _encore_playlists_with_title(title: str) -> "list[dict] | ToolResult":
+    """Return Encore playlists whose title matches (exact, after the marker).
+
+    Fails closed: if the lookup itself fails, return that failure (a ToolResult), not [],
+    so the caller never mistakes "could not check" for "no such playlist"."""
     status, body, _ = http("GET", f"{LB_API}/user/{LB_USER}/playlists",
                            params={"count": 100}, auth=True, timeout=SLOW_READ_TIMEOUT_S)
     if status != 200:
-        return []
+        return _http_fail("ListenBrainz playlist lookup", status, body)
     out = []
     for item in body.get("playlists", []):
         pl = item["playlist"]
@@ -486,8 +537,14 @@ def create_playlist(title: str, recording_mbids: list[str]) -> str:
     if not recording_mbids:
         return fail("input", "recording_mbids must contain at least one MBID.").to_json()
 
+    problem = _mbid_list_problem(recording_mbids, "recording_mbids")
+    if problem:
+        return fail("input", problem).to_json()
+
     # Idempotent: if an Encore playlist with this title exists, add to it instead.
     existing = _encore_playlists_with_title(title)
+    if isinstance(existing, ToolResult):
+        return existing.to_json()   # cannot tell whether it exists: do not create a duplicate
     if existing:
         target = existing[0]["playlist_mbid"]
         add = add_playlist_items(target, recording_mbids)
@@ -509,8 +566,7 @@ def create_playlist(title: str, recording_mbids: list[str]) -> str:
     status, resp, _ = http("POST", f"{LB_API}/playlist/create", body=body,
                            auth=True, timeout=WRITE_TIMEOUT_S)
     if status != 200 or resp.get("status") != "ok":
-        return fail(classify_status(status),
-                    f"ListenBrainz playlist create failed (HTTP {status}).").to_json()
+        return _http_fail("ListenBrainz playlist create", status, resp).to_json()
 
     playlist_mbid = resp["playlist_mbid"]
     ENCORE_CREATED_PLAYLISTS.add(playlist_mbid)
@@ -523,12 +579,15 @@ def add_playlist_items(playlist_mbid: str, recording_mbids: list[str]) -> str:
     if not recording_mbids:
         return fail("input", "recording_mbids must contain at least one MBID.").to_json()
 
+    problem = _mbid_list_problem(recording_mbids, "recording_mbids")
+    if problem:
+        return fail("input", problem).to_json()
+
     body = {"playlist": {"track": [_track_ref(mbid) for mbid in recording_mbids]}}
     status, resp, _ = http("POST", f"{LB_API}/playlist/{playlist_mbid}/item/add",
                            body=body, auth=True, timeout=WRITE_TIMEOUT_S)
     if status != 200:
-        return fail(classify_status(status),
-                    f"ListenBrainz playlist add failed (HTTP {status}).").to_json()
+        return _http_fail("ListenBrainz playlist add", status, resp).to_json()
 
     return ok({"playlist_mbid": playlist_mbid,
                "added_count": len(recording_mbids)}).to_json()
@@ -572,8 +631,7 @@ def delete_playlist(playlist_mbid: str) -> str:
     status, resp, _ = http("POST", f"{LB_API}/playlist/{playlist_mbid}/delete",
                            auth=True, timeout=WRITE_TIMEOUT_S)
     if status != 200:
-        return fail(classify_status(status),
-                    f"ListenBrainz playlist delete failed (HTTP {status}).").to_json()
+        return _http_fail("ListenBrainz playlist delete", status, resp).to_json()
 
     ENCORE_CREATED_PLAYLISTS.discard(playlist_mbid)
     return ok({"playlist_mbid": playlist_mbid, "deleted": True}).to_json()
@@ -584,12 +642,15 @@ def set_feedback(recording_mbid: str, score: int) -> str:
     if score not in (1, 0, -1):
         return fail("input", f"score must be 1 (love), 0 (clear), or -1 (hate); got {score}.").to_json()
 
+    problem = _mbid_problem(recording_mbid, "recording_mbid")
+    if problem:
+        return fail("input", problem).to_json()
+
     body = {"recording_mbid": recording_mbid, "score": score}
     status, resp, _ = http("POST", f"{LB_API}/feedback/recording-feedback",
                            body=body, auth=True, timeout=WRITE_TIMEOUT_S)
     if status != 200 or resp.get("status") != "ok":
-        return fail(classify_status(status),
-                    f"ListenBrainz feedback update failed (HTTP {status}).").to_json()
+        return _http_fail("ListenBrainz feedback update", status, resp).to_json()
 
     return ok({"recording_mbid": recording_mbid, "score": score}).to_json()
 
@@ -1948,7 +2009,8 @@ def run_session(mode: str) -> None:
                                data["listens"][0])
                 
                 _trace(fh, session_id, "tool_call", tool=name, args=args,
-                    success=parsed["success"], error_category=parsed["error_category"])
+                    success=parsed["success"], error_category=parsed["error_category"],
+                    error=None if parsed["success"] else str(parsed.get("error"))[:300])
 
                 messages.append({"role": "assistant", "content": None, "tool_calls": [call]})
                 messages.append({"role": "tool", "tool_call_id": call["id"], "content": _wrap_tool_result(result)})
