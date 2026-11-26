@@ -71,3 +71,11 @@ prompts/CHANGELOG.md, the saved midterm traces (traces/ is git-ignored) and the 
 - Decided (student): the window is inclusive, 2700 to 3300 whole seconds.
 - Decided (student): selection rule = minimum rank-sum. Among 10-track sets with usable durations, at most 2 tracks per artist and a total in the window, pick the set whose tracks sit earliest in radio order (smallest sum of 0-based ranks). Ties: closest to 3000 s, then the smallest sorted rank list. Code runs it as an exact search, not an LLM choice.
 - Open: the artist key is the creator string, not an MBID, so two spellings of one artist count as two. What happens when no set fits (step-machine escalation). Whether to re-select after verify_recordings failures or to verify first.
+
+## Track selector built - 2026-11-25
+- Built: track_select.py (repo root) with select_tracks(tracks, blocked=...), a pure function. It implements the minimum rank-sum rule from the entry above. It is not wired into encore.py yet.
+- Seen (student's pytest run): tests/unit/test_track_select.py has 69 passed. The whole unit suite has 177 passed. 60 of those cases compare the selector to a brute-force search on small random pools.
+- Choices made while writing it, open to change: each duration is rounded to whole seconds; a track with no creator counts as one shared artist for the cap; a track longer than 3300 s is dropped; the artist key is the exact creator string; `blocked` indices keep their original ranks, so re-selecting after a verify_recordings failure keeps the radio-order preference.
+- Failure outcomes: the selector returns reason "too_few_usable" or "no_set_in_window" and does not decide what happens next. The escalation path is still open.
+- Not seen: speed on the Spark. In the assistant's sandbox, one fake 50-track pool took about 0.5 s. Tests have only fake pools, not a live radio result.
+- Not tested: selecting from a pool after excluded-window removals, because no listens fixture exists yet.
