@@ -39,3 +39,26 @@ prompts/CHANGELOG.md, the saved midterm traces (traces/ is git-ignored) and the 
 ## Baseline setup - 2026-11-25
 - All 77 model calls in the 18 midterm traces used local Qwen models (tier "cheap"), so the cheap-to-expensive handoff was not exercised. Cost comparisons for Part 5 use this single-local-model setup on both sides.
 - The router's model call does not appear as an llm_call event in the traces (the route events carry no token counts; get_available_tools has not been read), so per-session model-call and token counts probably leave it out. Both sides of any comparison must count it the same way.
+
+## Model/code split and a thin supervisor - 2026-11-25
+- Problem: after the energy arc was dropped, code decides the tag table, track selection, scoring and the approval gate. That leaves the model very little to decide, and Part 5 needs two or more real choose-act-observe loops.
+- Decision: code checks, the model chooses inside bounds that code validates.
+  - Model: map weather and hour to a tag from the live-checked table; pick the right search result for the city; read free-text requests and episodic preferences; handle failures such as a misspelled artist.
+  - Code: length window, artist cap, excluded window, MBID format and verify_recordings, approval, completion, advancement, escalation, checkpoints, and all memory writes.
+  - A tag outside the table, or output that fails validation, is rejected by code. These are the failures Reflexion (2B, triggers a and c) is meant to catch.
+- Supervisor: kept as 5A and documented as thin. Inside a fixed state order it has little real choice. Its decisions are limited to which worker to dispatch and what brief to give it, for example re-dispatching the curator with a different brief after a failed check. Re-dispatches are bounded and count against the shared run budget. Code passes track lists and MBIDs between workers as typed messages, so the LLM never rewrites them.
+- Workers (proposed, agreed by the student): a weather worker (optional; chooses its own search and forecast arguments and reads the result) and a curator worker (chooses tags from the live-checked table and handles radio failures; depends on the weather worker's result).
+- Not chosen: 5C Debate. Appendix A "Fits" lists Tree-of-Thoughts, step machine and Debate. Reflexion and 5A are not on that list. Part 1 leaves the choice to the student, and the write-up must say why. Debate was not tested; the choice was made on chat suggestions, not on a measurement.
+- Risk (expectation, not a result): the supervisor may add cost without benefit. The Part 8 ablation compares 5A against the step machine alone, which is the best single-agent configuration. If the single agent wins, the workbook says so.
+- Risk: code may reject too few model choices for Reflexion to show a revision. The Part 8 set includes a deliberate failure case, such as a misspelled artist.
+- Not decided yet: the re-dispatch bound, and which one worker owns approval and episodic-memory writes.
+
+## Tag probe and corrections - 2026-11-25
+- Seen (scratch/probe_tags.py, 22 tags, one sample each): all 22 returned HTTP 200 and 50 tracks. Distinct artists per pool ran from 35 to 50. The most tracks by one artist was 3 in 8 pools (chillout, lo-fi, acoustic, soul, piano, synthwave, dream pop, bossa nova) and 1 to 2 in the rest. Between 47 and 50 tracks per pool had a duration.
+- Seen: first 10 tracks under the 2-per-artist cap: 5 pools in the 45-55 minute window, 10 out, 7 not scored (the table shows no minutes for them; the missing-duration cause comes from the handoff note, not from this table). Of the 15 scored picks, 9 were under 45 minutes (30 to 43) and 1 was 55 and marked OUT. The scored picks averaged about 43 minutes, roughly 4.3 minutes per track against the 5.0 the target needs.
+- Not seen: whether any 10 tracks in a pool can reach the window. Only the first-10 pick was measured. One sample per tag, and radio results change between calls.
+- Open: the window edge. A 55-minute pick is marked OUT, so decide whether the window is inclusive and whether the check uses seconds.
+- Consequence: a naive pick often misses the window, so code must select the tracks. The selection rule is not decided yet.
+- Contradicted: the Part 2 entry's expectation that the first candidate would likely pass the length window. The probe gave ambient 44 distinct artists against 50 in the earlier call. The Tree-of-Thoughts rejection should rest on the tool-failure evidence, and Part 1 should not cite that expectation.
+- Corrected: "all 77 model calls" means all 77 logged llm_call events. The router's call is not logged, so its model is unknown.
+- Changed: the Part 5 ablation baseline is the step machine alone, which is the best single-agent configuration (Part 8). The "flat agent with every tool" comparison in the Parts 4 and 5 entry is replaced. Compare correctness, cost, latency and tool calls, as Part 8 lists them. "Wrong-tool calls" is dropped, because the step machine already limits tools per state.
