@@ -13,7 +13,7 @@ Request: "Something for this afternoon in Missoula. 10 tracks, about 50 minutes,
 - Fixture detail: at least one track played in the last 3 days also appears in the radio result, so the exclusion has something to catch.
 - No question is asked. The user gave the location, the length and the window.
 - The weather tool is called before any lb_radio call. Its location comes from the search result's coordinates and timezone.
-- One tag-based lb_radio prompt, chosen by a weather table in code. Every tag in the table must be checked live first: a tag with no tracks returns an opaque HTTP 400.
+- One tag-based lb_radio prompt, chosen by a weather table in code. Every tag in the table must be checked live first: a tag the server rejects returns HTTP 400 with a reason, which Patch A now shows to the model.
 - The draft has 10 tracks, a total length of 45 to 55 minutes, at most 2 tracks per artist, and none of the recently played tracks.
 - All 10 MBIDs pass the format check and then verify_recordings.
 - Exactly one [approval needed], for create_playlist, after verification. create_playlist is not offered to the model before that.
@@ -33,7 +33,7 @@ Request: "Make me something for today's weather."
 Request: the same as Golden 1, with the weather connection refused (the failure recorded earlier as a ConnectError).
 - The weather agent is optional, so the run continues without weather.
 - The playlist is built from a neutral default prompt (not yet chosen).
-- The number of attempts is bounded. By default the dispatch loop retries a transient failure 4 times with backoff; the design may change this.
+- The number of attempts is bounded. Under Part 3.3 a refused connection is fatal and is not retried; a transient read (429, 503, timeout) is retried once with backoff. Every attempt counts against the shared run budget.
 - No forecast is invented. The reply tells the user the weather was unavailable.
 - The trace has a failed mcp_call that names the error type.
 - The approval gate and every other check still apply.
@@ -42,6 +42,6 @@ Request: the same as Golden 1, with the weather connection refused (the failure 
 - A Reflexion case (for example a misspelled artist that the server rejects with a reason) belongs in the Part 8 set of 10 requests.
 
 ## Open
-- The weather-to-tag table does not exist. Only tag:(ambient) and tag:(metal) have been seen to return tracks.
+- The weather-to-tag table does not exist. All 22 tags in the two probes returned 50 tracks (see decisions.md). tag:(metal) was seen earlier but is not among those 22.
 - The default-prompt choice for Golden 3.
 - How the step machine learns the location in Golden 2 (memory is allowed but not decided).

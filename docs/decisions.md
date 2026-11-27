@@ -119,3 +119,12 @@ prompts/CHANGELOG.md, the saved midterm traces (traces/ is git-ignored) and the 
 - Not seen: a live call with the new field, the token cost, or whether the model uses durations.
 - Effect: select_tracks can read creator and duration from the tool output directly. It is still not wired into encore.py.
 - Open: whether to hide durations from the model once the selector is wired in.
+
+## Unknown excluded window - 2026-11-27
+- Rule: a track is excluded if its recording MBID appears in a listen within 3 days before the injectable clock time. Matching is by MBID only.
+- Seen (encore.py get_recent_listens, lines 287-304): count must be 1 to 100; the tool sends only count (no time bound); each listen has listened_at, artist, track and recording_mbid (from mbid_mapping, None when unmapped).
+- Covered or unknown: "covered" if the oldest fetched listen is at or before the cutoff, or if fewer than the 100 requested came back (inference, not tested: the whole history was fetched). Otherwise "unknown".
+- Handling "unknown" (proposed): continue, log it, and show "excluded window: unknown" in the approval prompt and the final reply. Never report it as "nothing recently played".
+- Listens with no recording_mbid cannot be matched. Code counts them and reports the count. It does not guess by title.
+- Risk (inference, not tested): the MBID mapped to a listen may differ from the radio's MBID for the same song, so a repeat could slip through.
+- Open: fetching more than 100 listens or passing a time bound (the tool does not expose one; I believe the API has max_ts and min_ts, which I have not verified); a malformed 200 from get_recent_listens raises instead of returning an error.
