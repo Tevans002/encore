@@ -102,3 +102,13 @@ prompts/CHANGELOG.md, the saved midterm traces (traces/ is git-ignored) and the 
 - If verify_recordings itself fails (a transient or fatal error), that is not a selection failure. Nothing is written, and the error is mapped and reported.
 - Not seen: what verify_recordings returns per MBID, or its batch limit. It must be read in encore.py before the code is written. If one call can take about 50 MBIDs, verifying before selecting could be simpler.
 - Open: whether verify calls count against the 3 radio calls (proposed: no, but they count against the shared run budget); the "unknown" excluded window.
+
+## Verify after selecting: what verify_recordings does - 2026-11-27
+- Seen (encore.py lines 444-467): one MusicBrainz GET per MBID, sequential, no batch limit. Result per MBID: valid (id and title) or invalid ("not found", "malformed MBID", "empty MBID"). It returns no duration.
+- Seen: a transient or fatal error on any one MBID returns fail() for the whole call, and the earlier valid results are discarded. The code comment says the opposite.
+- Corrected: "one verify_recordings call on the 10 selected MBIDs" means one tool call and 10 MusicBrainz requests. Selecting first and verifying only the chosen 10 still costs far less than verifying about 50.
+- Seen (encore.py http(), lines 235-268): MusicBrainz requests wait on MB_MIN_INTERVAL_S, so verification is paced. The value was not in the pasted lines.
+- Seen (encore.py lb_radio, lines 403-425): the tool returns only recording_mbid, title and creator per track and drops duration. The probes read the raw response through http(), so the selector cannot be fed from the tool's output as it stands.
+- Seen (encore.py ToolResult): the midterm has four error categories: transient, input, resource, fatal. Part 3.3 maps MCP failures to three of them.
+- Decided (student, option A): code calls verify_recordings once per MBID and caches verified MBIDs, so a transient failure retries only the failed MBID. Cost: 10 tool calls and 10 trace events instead of 1, which raises the Part 8 tool-call counts.
+- Open: how durations reach the selector; how a merged MBID is handled (not tested); whether the cache is kept in the checkpoint.
