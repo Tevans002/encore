@@ -79,3 +79,26 @@ prompts/CHANGELOG.md, the saved midterm traces (traces/ is git-ignored) and the 
 - Failure outcomes: the selector returns reason "too_few_usable" or "no_set_in_window" and does not decide what happens next. The escalation path is still open.
 - Not seen: speed on the Spark. In the assistant's sandbox, one fake 50-track pool took about 0.5 s. Tests have only fake pools, not a live radio result.
 - Not tested: selecting from a pool after excluded-window removals, because no listens fixture exists yet.
+
+## Escalation when no set fits - 2026-11-27
+- Trigger: select_tracks returns reason "too_few_usable" or "no_set_in_window".
+- Decided (student): a bounded ladder, in order.
+  1. Re-select with the blocked indices removed. No calls.
+  2. Re-call lb_radio with the same tag, once. Radio results change between calls (seen in the two probes).
+  3. The curator picks a different tag from the live-checked table, once. Code rejects any tag outside the table.
+  4. Escalate to the user with a structured error (reason and counts). Code offers to relax the window (for example 40 to 60 minutes) only if the user agrees. It never relaxes the window silently.
+- Bound (student, a starting value, not a measurement): at most 3 radio calls per run in total, charged to the shared run budget. Exhaustion ends in step 4, not a retry cascade.
+- Not chosen: merging pools from two radio calls. Rank order across calls would be ambiguous.
+- Reuse: Golden 3 (weather down) uses the same path for its default prompt.
+- Open: whether a transient retry of one call counts toward the 3; how the 3 relates to Reflexion's bound of 3 and to the shared run budget's unit; the structured error schema; whether to verify before or after selecting.
+
+## Verify after selecting - 2026-11-27
+- Decided (student): select first, then verify only the chosen 10.
+  1. Code drops tracks with a malformed MBID locally (no call), then selects.
+  2. One verify_recordings call on the 10 selected MBIDs.
+  3. Any MBID that fails goes into `blocked`, and code re-selects. This is ladder step 1 and costs no radio call. Only the newly chosen tracks are verified next.
+  4. Repeat at most twice. If the pool still cannot give 10 verified tracks, go to the next ladder step.
+- Why: it is cheaper than verifying about 50 tracks. Verify-before-write holds either way, because create_playlist is not offered until all 10 are verified.
+- If verify_recordings itself fails (a transient or fatal error), that is not a selection failure. Nothing is written, and the error is mapped and reported.
+- Not seen: what verify_recordings returns per MBID, or its batch limit. It must be read in encore.py before the code is written. If one call can take about 50 MBIDs, verifying before selecting could be simpler.
+- Open: whether verify calls count against the 3 radio calls (proposed: no, but they count against the shared run budget); the "unknown" excluded window.
