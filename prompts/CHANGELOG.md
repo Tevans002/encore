@@ -78,3 +78,10 @@
 - Checked: 8 new unit tests (108 pass). In a sandbox, 5 of the 8 failed against a stand-in of the old behaviour and all 8 passed after the change. Not run against the real ListenBrainz API.
 - Limits: if a create request times out after ListenBrainz made the playlist, the retry's lookup finds it and add_playlist_items posts the same tracks again; whether ListenBrainz ignores duplicate tracks has not been checked. The lookup still fetches only 100 playlists. A 200 reply that is not JSON still raises inside the lookup.
 - Prediction, not yet tested: in the Part 8 resume test, forcing the lookup to fail (the --inject fault injection applies to ListenBrainz URLs) and then resuming leaves exactly one playlist with that title.
+
+## Radio tracks carry duration (lb_radio) — 2026-11-27
+- Cause: by reading the code and the tag probes, not seen in a midterm trace: lb_radio returned only recording_mbid, title and creator, so code could not total a draft's length. The probes read durations from the raw response, and the tool dropped them.
+- Changed: each lb_radio track now also has "duration" (milliseconds, None when the server omits it). The tool description is unchanged. The model now sees durations. The student chose this for now, to see how it behaves.
+- Checked: 2 new unit tests (179 pass). Not checked: a live lb_radio call after the change.
+- Limits: 0 to 3 of 50 tracks per pool had no duration in the probes. The extra tokens per track were not measured. Whether the model uses durations, or uses them badly, was not tested.
+- Prediction, not yet tested: none about behaviour. Part 8 should check traces for the model reasoning about durations, and compare tokens with and without the field.

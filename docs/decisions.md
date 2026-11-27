@@ -112,3 +112,10 @@ prompts/CHANGELOG.md, the saved midterm traces (traces/ is git-ignored) and the 
 - Seen (encore.py ToolResult): the midterm has four error categories: transient, input, resource, fatal. Part 3.3 maps MCP failures to three of them.
 - Decided (student, option A): code calls verify_recordings once per MBID and caches verified MBIDs, so a transient failure retries only the failed MBID. Cost: 10 tool calls and 10 trace events instead of 1, which raises the Part 8 tool-call counts.
 - Open: how durations reach the selector; how a merged MBID is handled (not tested); whether the cache is kept in the checkpoint.
+
+## Durations visible to the model - 2026-11-27
+- Decided (student): add "duration" to the lb_radio output (option 1), changing midterm code. The model sees it for now and the choice is revisited after we see how it behaves. The pre-change file is saved as ~/scratch/encore.py.before-duration, and git history has the rest.
+- Seen: before the change, only tests/unit/test_failure_reasons.py called lb_radio, and all five calls were failure cases. After it, 179 unit tests pass (177 plus 2 new).
+- Not seen: a live call with the new field, the token cost, or whether the model uses durations.
+- Effect: select_tracks can read creator and duration from the tool output directly. It is still not wired into encore.py.
+- Open: whether to hide durations from the model once the selector is wired in.

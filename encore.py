@@ -419,6 +419,7 @@ def lb_radio(prompt: str, mode: str = "easy") -> str:
             "recording_mbid": ident.rstrip("/").rsplit("/", 1)[-1],
             "title": t.get("title"),
             "creator": t.get("creator"),
+            "duration": t.get("duration"),
         })
     return ok({"mode": mode, "tracks": out,
                "feedback": payload.get("feedback", [])}).to_json()
