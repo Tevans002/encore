@@ -1,0 +1,871 @@
+{
+ "payload": {
+  "feedback": [
+   "fixture feedback note"
+  ],
+  "jspf": {
+   "playlist": {
+    "annotation": "Recorded and scrubbed for tests.",
+    "creator": "fixture",
+    "extension": {
+     "e4fd8659-ba4a-7c78-793b-7badac42c7a0": {
+      "public": true
+     }
+    },
+    "title": "Fixture radio playlist",
+    "track": [
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/14b3a381-c939-d256-09ac-579abfe77cbe"
+      ],
+      "creator": "Artist 01",
+      "title": "Track 01",
+      "album": "Album 01",
+      "duration": 320000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/426052f2-03c7-006a-1487-c00634c502af"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/c1ea0fff-3774-6377-6046-6bfb023cafa7"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/01f8e062-7c26-b2d6-2fc0-baf9cc40015a"
+      ],
+      "creator": "Artist 02",
+      "title": "Track 02",
+      "album": "Album 02",
+      "duration": 231760,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/dc4960b9-25cd-6944-16fc-225ae54de73c"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/867cacb9-d7d4-21fc-152b-907feeba2f81"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/84f71d36-4320-2831-d693-eb22927970a0"
+      ],
+      "creator": "Artist 03",
+      "title": "Track 03",
+      "album": "Album 03",
+      "duration": 181360,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/a7ff7a48-6cb0-12c5-372e-06cf23f02119"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/5da3e854-ae57-e7ea-d03c-75eb8208531a"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/8738b8f3-de30-0fed-c892-c7e87ed662bc"
+      ],
+      "creator": "Artist 04",
+      "title": "Track 04",
+      "album": "Album 04",
+      "duration": 312626,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/8ab73f49-5b53-6546-755c-ca3e7505635e"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/31d54c49-8ff0-1234-c979-2abd5124abcd"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/a1097450-5981-ad41-8488-8576d3410dc5"
+      ],
+      "creator": "Artist 05",
+      "title": "Track 05",
+      "album": "Album 05",
+      "duration": 413000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/80e5e5d0-a3a2-40ad-4db0-f54117efa8f5"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/df0dd51f-18b4-8cd0-58e7-10f28d52f512"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/1f6aad4f-a7d1-17d5-dff1-68e32dacb2ab"
+      ],
+      "creator": "Artist 06",
+      "title": "Track 06",
+      "album": "Album 06",
+      "duration": 380973,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/7b2a108f-b855-b8df-7782-4e51c81fc40f"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/6f4c37b6-2415-68ca-182f-b85f7e7f99de"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/f5527ea2-97dd-92a5-ca73-e7cf346d284b"
+      ],
+      "creator": "Artist 07",
+      "title": "Track 07",
+      "album": "Album 07",
+      "duration": 474000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/fd79f7d4-f8fe-8acf-0f92-08ce862f62ef"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/5b3fdd12-18c4-ef39-3123-e06b830b4a8d"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/5ff5c259-136e-6211-822c-6d3e71913684"
+      ],
+      "creator": "Artist 08",
+      "title": "Track 08",
+      "album": "Album 08",
+      "duration": 324573,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/6b1fa0e3-26a8-b4ef-effe-2e51d078821e"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/abb8ab68-2b95-97b9-b1b5-a62d6cec68da"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/8474381f-6861-0c36-72c0-ca816c00f355"
+      ],
+      "creator": "Artist 09",
+      "title": "Track 09",
+      "album": "Album 09",
+      "duration": 427000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/2ac050bb-c54e-fbb0-76f4-b26ecd583ad0"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/93f9ff56-e93a-b5f0-1e18-1bd8f34a4e79"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/d1688591-425b-5c5e-00be-ee5a1cc291de"
+      ],
+      "creator": "Artist 10",
+      "title": "Track 10",
+      "album": "Album 10",
+      "duration": 128000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/db2b2e71-37e3-5031-0932-de10260350d4"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/5e47adae-d967-3b3b-79f0-b7cc2ed6e723"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/6eca4005-038d-1e07-00bc-4b0738599943"
+      ],
+      "creator": "Artist 11",
+      "title": "Track 11",
+      "album": "Album 11",
+      "duration": 270026,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/800be2ab-778d-6228-4dc4-80877bcb0a2f"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/79f47487-dde2-3e14-c5c0-0708d18352fe"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/4ad1900c-0fb6-f69f-eb9e-df704b5a59a8"
+      ],
+      "creator": "Artist 12",
+      "title": "Track 12",
+      "album": "Album 12",
+      "duration": 620000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/0ec22e1d-7aeb-c710-53a5-494045bf6551"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/ce5a5147-f494-75ea-1c24-1d06cac6ce10"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/fdaa750e-4d0d-8d51-7d02-0ce677f4c011"
+      ],
+      "creator": "Artist 13",
+      "title": "Track 13",
+      "album": "Album 13",
+      "duration": 537013,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/a3dd0f54-5a4a-0bb5-bf9a-edb1caa2b150"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/7ab24a7c-422c-240a-772d-30f58e1a7982"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/20e75690-4ffa-508d-b06c-637a5dff7f5a"
+      ],
+      "creator": "Artist 14",
+      "title": "Track 14",
+      "album": "Album 14",
+      "duration": 401253,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/cec4e149-a9b6-2b36-f1b5-e80ffe7029ea"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/4472ce19-2910-390f-ec14-72499c65ad14"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/f1f554ea-77d7-5059-f532-b2c74380959f"
+      ],
+      "creator": "Artist 15",
+      "title": "Track 15",
+      "album": "Album 15",
+      "duration": 162000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/2e45cf02-570c-f851-280a-cda6aa334c87"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/2b95b649-a6bc-91cd-035b-538743b03b94"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/84904eac-872b-24ad-a1b4-e394c50977af"
+      ],
+      "creator": "Artist 16",
+      "title": "Track 16",
+      "album": "Album 16",
+      "duration": 246213,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/6d3988bd-6c68-1b2c-0c2e-8844cb39d742"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/bd6db4ec-df2c-84fc-2953-d147675dff4d"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/28feb9e4-329f-0865-0dc8-8018f9389637"
+      ],
+      "creator": "Artist 17",
+      "title": "Track 17",
+      "album": "Album 17",
+      "duration": 440000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/1df85fa0-b857-48e0-d687-8b5964c0f004"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/6d5ba618-bb64-fbde-06aa-c9050d074673"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/72e777bf-2398-5e8a-703a-d34fd4bfe71f"
+      ],
+      "creator": "Artist 18",
+      "title": "Track 18",
+      "album": "Album 18",
+      "duration": 205000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/a6f6001e-9c75-fbeb-3a13-92ee10292cc9"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/7319bc48-d63b-9b85-44ea-0d099defbdcb"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/d01abf39-03cb-672a-1252-758cdfeea8ca"
+      ],
+      "creator": "Artist 19",
+      "title": "Track 19",
+      "album": "Album 19",
+      "duration": 422000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/afb04803-7952-cff2-5ac7-def7e5bfa27c"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/c1eea407-6ec2-8a2a-181d-f161451d7323"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/48c718e4-a633-f1b0-fbe1-deadc4bf99ec"
+      ],
+      "creator": "Artist 20",
+      "title": "Track 20",
+      "album": "Album 20",
+      "duration": 271600,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/a9a2d01a-6c71-a111-13b1-a7011b483755"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/4e021ba2-81b2-92ee-19c4-f8e85c5475b2"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/43c2d7bb-470e-ee8f-791e-015ca1efe5ab"
+      ],
+      "creator": "Artist 21",
+      "title": "Track 21",
+      "album": "Album 21",
+      "duration": 233560,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/406a28c5-597e-063a-fd08-1b83aeee4db0"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/95486683-99d3-caa6-127a-73d9597049c5"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/b7936638-056f-2996-9551-b1e0f1fed507"
+      ],
+      "creator": "Artist 22",
+      "title": "Track 22",
+      "album": "Album 22",
+      "duration": 253906,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/ace4182e-cbe9-18dc-c89e-55bc6202d088"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/c987d3f1-d5fb-b898-772e-5e7ace84f6cf"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/c4ff4997-c2ac-d27a-ad5b-b22a3de89426"
+      ],
+      "creator": "Artist 23",
+      "title": "Track 23",
+      "album": "Album 23",
+      "duration": 232466,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/2b781334-8822-cc04-a0f0-535df27f71fa"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/eeb47190-96fa-053d-0c8a-9ed8ad6cea0e"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/7ef3705a-9124-23f7-e111-660658771d9c"
+      ],
+      "creator": "Artist 24",
+      "title": "Track 24",
+      "album": "Album 24",
+      "duration": 231000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/477977f9-f607-e84d-a1a3-db66f35f0762"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/40a50d48-7cfc-7a9e-4095-cae67a8a1a7a"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/29c24278-0c4f-7f1c-8a5b-c7aa90086ceb"
+      ],
+      "creator": "Artist 25",
+      "title": "Track 25",
+      "album": "Album 25",
+      "duration": 455213,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/60ec080b-5503-7622-5c94-ff23b43dca8d"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/6943f678-b660-7fb1-fec8-38bb338771e3"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/cc6e3fc2-be18-a2b9-4117-21a68b9ab6e0"
+      ],
+      "creator": "Artist 26",
+      "title": "Track 26",
+      "album": "Album 26",
+      "duration": 382000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/7e369dba-a12d-0e7c-2aba-30e37a975e2a"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/ee153517-4124-e61d-0b19-1788033a863e"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/f40206c3-b1f5-33a7-bc21-7c316a8ec800"
+      ],
+      "creator": "Artist 27",
+      "title": "Track 27",
+      "album": "Album 27",
+      "duration": 274000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/bd1a6f9d-ea0c-9c29-bf44-9a60950fa66a"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/fddfb70b-8e29-8311-b2e8-7a6853174a3b"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/ddb4c055-7998-bd63-9d4e-e56f17ae03c7"
+      ],
+      "creator": "Artist 28",
+      "title": "Track 28",
+      "album": "Album 28",
+      "duration": 312000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/667ac0e9-578a-91b3-876b-610f3179d457"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/703a7e6f-fa29-049d-b95a-6860eb4590a7"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/2d3647df-0251-fc6c-a0de-5659ad41d28e"
+      ],
+      "creator": "Artist 29",
+      "title": "Track 29",
+      "album": "Album 29",
+      "duration": 277720,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/5f18109c-6062-8c1c-3b5e-819aa85a61e4"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/a95440d8-e4f5-b8d5-a48b-1b21f2bddfa0"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/c6c0181f-b680-e6c7-4368-878d635dc7ee"
+      ],
+      "creator": "Artist 30",
+      "title": "Track 30",
+      "album": "Album 30",
+      "duration": 91000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/dfef20de-346b-9f91-04fb-0e8133e945d1"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/fcb1e977-9627-fb25-8606-5b0e56e67ba7"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/24c55699-e384-fcd1-288c-f7e4184668f1"
+      ],
+      "creator": "Artist 31",
+      "title": "Track 31",
+      "album": "Album 31",
+      "duration": 279000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/eb1e2779-b581-4f24-f417-94a0458b94fb"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/b45b40e3-0c6e-bc3c-9d3b-d04c2fa05811"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/2b6cc129-f05f-4717-3d85-24cccd0c5b64"
+      ],
+      "creator": "Artist 32",
+      "title": "Track 32",
+      "album": "Album 32",
+      "duration": 102680,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/c66dba20-ca16-60db-1504-bb20865d16c4"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/97f2d146-3f9b-f7ce-ab59-4c84e0fd5f85"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/f804873a-133e-ac90-538f-c4d5db051af6"
+      ],
+      "creator": "Artist 33",
+      "title": "Track 33",
+      "album": "Album 33",
+      "duration": 350000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/b138a5e3-8168-ec6e-d010-e19b677af87b"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/38b63616-5648-0e96-3323-eefa8be6075e"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/3980aba3-150c-97ef-538c-2ffe43d829e9"
+      ],
+      "creator": "Artist 34",
+      "title": "Track 34",
+      "album": "Album 34",
+      "duration": 401373,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/0061147a-5457-2fbf-cf20-3b69cd7e91e7"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/574cf1fa-751a-a963-14d7-2d7dd49aa193"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/76b07062-f323-af1f-1b50-837994fd6c13"
+      ],
+      "creator": "Artist 35",
+      "title": "Track 35",
+      "album": "Album 35",
+      "duration": 420920,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/75d083dd-e92c-f81b-398c-ed5fc17e2081"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/011ab3ed-a328-c1fa-0642-0cc0a6fd2d11"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/ce12b8f0-4e3b-5dce-6fa9-930f1094690c"
+      ],
+      "creator": "Artist 36",
+      "title": "Track 36",
+      "album": "Album 36",
+      "duration": 329933,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/e7cd7cc4-13a9-037e-ff2a-dc6e48f2f7c6"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/8fcc8016-4a29-234f-fa6e-c1b0fc3bcf00"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/a75b64cd-a9c6-7857-b26b-c55595846c16"
+      ],
+      "creator": "Artist 37",
+      "title": "Track 37",
+      "album": "Album 37",
+      "duration": 509000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/0a0819ad-9cc7-58b7-5ae3-eec184ebdd33"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/d07595ff-1b7b-880f-017e-32e78722b32f"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/d185b0a9-5d60-646b-1780-3212b120ef91"
+      ],
+      "creator": "Artist 38",
+      "title": "Track 38",
+      "album": "Album 38",
+      "duration": 208000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/172d16aa-27c8-e9df-0777-1e8e5a8060e0"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/cb21daaa-60c7-f777-2404-203e336beef4"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/0794d37f-dce0-242e-9b40-80776bc822a2"
+      ],
+      "creator": "Artist 39",
+      "title": "Track 39",
+      "album": "Album 39",
+      "duration": 126000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/e52dfdfd-cc87-a4fe-f825-366060b2cf8d"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/5eece6d8-7b83-e79c-a4d4-82fe98b57968"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/7930a5d5-f3d4-08e6-931a-c06ac6e5989b"
+      ],
+      "creator": "Artist 40",
+      "title": "Track 40",
+      "album": "Album 40",
+      "duration": 160533,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/72e15024-32d3-a831-ba2f-a0e4d5b217b5"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/77130cce-a77b-7834-b3c0-bbb64bfccf5d"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/e91fa42d-3f46-ef67-2edf-63ac51ddead8"
+      ],
+      "creator": "Artist 41",
+      "title": "Track 41",
+      "album": "Album 41",
+      "duration": 484960,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/e1626bfd-74b7-361c-bfd9-c231b604e567"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/b135b320-7b99-b828-4ade-ac6e7aad0fb4"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/7cde1270-79a0-97a4-2bb6-ab4e4b6d354d"
+      ],
+      "creator": "Artist 42",
+      "title": "Track 42",
+      "album": "Album 42",
+      "duration": 375000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/84f5eec5-15bb-5551-30c9-462d2750ab96"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/6135fd54-046f-a5b4-8b37-8d5fb19c4844"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/c671e21e-c2bb-4edd-3b99-4814e833d6fc"
+      ],
+      "creator": "Artist 43",
+      "title": "Track 43",
+      "album": "Album 43",
+      "duration": 252200,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/8ad0a2ef-f6da-1768-e159-f858edeafda1"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/1880c9f2-54ff-11d5-4940-d8ae29b18f76"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/38bf08d6-268a-8dc8-70cf-32f7ac779bfb"
+      ],
+      "creator": "Artist 44",
+      "title": "Track 44",
+      "album": "Album 44",
+      "duration": 298200,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/069c1d97-7648-2e43-5807-3e0caeac5f89"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/fffac781-091c-cfab-ddc5-af14b7f50da1"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/1ef88038-732c-3991-6a95-cd0ea854dea4"
+      ],
+      "creator": "Artist 45",
+      "title": "Track 45",
+      "album": "Album 45",
+      "duration": 144360,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/cb62a070-774c-3cc7-ee93-8ee9e6c83e21"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/f0f768c6-ee25-7f21-fd2b-faa0602c7544"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/d2763ccd-c966-a220-55ee-9faf8ec2a4f5"
+      ],
+      "creator": "Artist 46",
+      "title": "Track 46",
+      "album": "Album 46",
+      "duration": 432812,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/d773c1ed-f1ee-8e38-d243-8617e6f4f9c5"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/c394428d-ce59-8afa-d841-7e53e465a8d4"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/b95cf4ba-7ba9-316d-c96a-22da8978f44b"
+      ],
+      "creator": "Artist 47",
+      "title": "Track 47",
+      "album": "Album 47",
+      "duration": 315920,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/02610d0a-506e-7ca0-291f-323085a001bf"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/59803519-ac6d-0e88-7dde-883864db96c6"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/9b4aa726-c070-f181-4e48-b903de611f32"
+      ],
+      "creator": "Artist 48",
+      "title": "Track 48",
+      "album": "Album 48",
+      "duration": 208640,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/88207987-a2aa-e1e3-c7ab-85eb74730bf2"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/54ec23c4-55c8-0e19-0239-0915891acf83"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/0a844874-790e-30d6-f416-32e0b93a887b"
+      ],
+      "creator": "Artist 49",
+      "title": "Track 49",
+      "album": "Album 49",
+      "duration": 330000,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/7245b24a-d266-6743-fe63-f650dfe8de49"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/20555d68-c72b-3ef7-79a2-f412b4cb510f"
+       }
+      }
+     },
+     {
+      "identifier": [
+       "https://musicbrainz.org/recording/2518e1c6-3eb6-6bd2-0f99-8a523318c7ac"
+      ],
+      "creator": "Artist 50",
+      "title": "Track 50",
+      "album": "Album 50",
+      "duration": 456080,
+      "extension": {
+       "https://musicbrainz.org/doc/jspf#track": {
+        "artist_identifiers": [
+         "https://musicbrainz.org/artist/a73ac3f5-a4bd-4f56-0a2f-740cc3ab72e6"
+        ],
+        "release_identifier": "https://musicbrainz.org/release/13651a3f-17be-e171-91fb-2fca2e613230"
+       }
+      }
+     }
+    ]
+   }
+  }
+ }
+}

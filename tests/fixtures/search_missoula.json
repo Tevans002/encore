@@ -1,0 +1,51 @@
+{
+ "structured_content": {
+  "results": [
+   {
+    "id": 5666639,
+    "name": "Missoula",
+    "latitude": 46.87215,
+    "longitude": -113.994,
+    "elevation": 978,
+    "timezone": "America/Denver",
+    "country": "United States",
+    "country_code": "US",
+    "admin1": "Montana",
+    "admin2": "Missoula",
+    "population": 71022,
+    "feature_code": "PPLA2"
+   },
+   {
+    "id": 5666669,
+    "name": "Missoula Unit Heliport",
+    "latitude": 46.8552,
+    "longitude": -114.05956,
+    "elevation": 961,
+    "timezone": "America/Denver",
+    "country": "United States",
+    "country_code": "US",
+    "admin1": "Montana",
+    "admin2": "Missoula",
+    "population": null,
+    "feature_code": "AIRH"
+   },
+   {
+    "id": 5666675,
+    "name": "Missoula International Airport",
+    "latitude": 46.91603,
+    "longitude": -114.0915,
+    "elevation": 974,
+    "timezone": "America/Denver",
+    "country": "United States",
+    "country_code": "US",
+    "admin1": "Montana",
+    "admin2": "Missoula",
+    "population": null,
+    "feature_code": "AIRP"
+   }
+  ],
+  "count": 3,
+  "notice": "Low-confidence match: the top result \"Missoula\" (United States, feature_code PPLA2) has a population of 71,022, below the 100,000 this tool reads as a confident city match. Verify the coordinates before passing them to a weather tool. If the query was a historic or colonial exonym, the index may hold no entry for it at all and has returned an unrelated feature — retry with the place’s current official name."
+ },
+ "is_error": false
+}
