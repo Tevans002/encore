@@ -30,6 +30,20 @@ MAX_VIOLATIONS = 2          # second out-of-list or pre-approval request ends th
 EXCLUDE_DAYS = 3
 LISTENS_REQUESTED = 100
 RELAXED_WINDOW = (2400, 3600)
+ARTIST_MAX_CHARS = 80
+MAX_ARTISTS = 5             # artist names allowed per run (the user's own plus Reflexion corrections)
+ARTIST_SOURCES = ("user", "reflection")
+_BAD_ARTIST_CHARS = frozenset("():;<>{}[]|") | {chr(34), chr(92)}
+
+
+def artist_prompt(name: str) -> str:
+    """'artist:(Name)' for lb_radio. Rejects anything that could add a second prompt element."""
+    clean = " ".join(str(name).split())
+    if not 1 <= len(clean) <= ARTIST_MAX_CHARS:
+        raise ValueError("artist name must be 1 to 80 characters")
+    if any(c in _BAD_ARTIST_CHARS or ord(c) < 32 or ord(c) == 127 for c in clean):
+        raise ValueError("artist name holds a character that is not allowed in a radio prompt")
+    return f"artist:({clean})"
 
 
 @dataclass(frozen=True)
@@ -75,6 +89,7 @@ class RunData:
     attempts: dict = field(default_factory=dict)
     violations: int = 0
     halted: bool = False
+    artists: list = field(default_factory=list)   # [{"name", "source"}] allowed for artist prompts
     stop: Optional[dict] = None           # {"state", "kind", ...}
 
     def to_dict(self) -> dict:
@@ -186,11 +201,31 @@ def escalate(d: RunData, state: str, kind: str, message: str = "") -> None:
         d.stop = {"state": state, "kind": kind, "message": message[:300]}
 
 
+def add_artist(d: RunData, name: str, source: str) -> str:
+    """Allow one artist prompt and return it. The DRIVER must pass only text from the user's own request
+    (source "user") or a Reflexion correction of it (source "reflection"). This module cannot check where
+    a string came from, so never pass a search result or a tool result."""
+    if source not in ARTIST_SOURCES:
+        raise ValueError("source must be 'user' or 'reflection'")
+    prompt = artist_prompt(name)
+    clean = prompt[len("artist:("):-1]
+    if all(a["name"] != clean for a in d.artists):
+        if len(d.artists) >= MAX_ARTISTS:
+            raise ValueError(f"at most {MAX_ARTISTS} artist names per run")
+        d.artists.append({"name": clean, "source": source})
+    return prompt
+
+
 def record_radio_call(d: RunData, cfg: Config, tag: str, tracks: Optional[list] = None) -> str:
     """Charge one radio call. `tracks` is None when the call failed. Returns 'first', 'same' or 'different'."""
     if d.radio_calls >= MAX_RADIO_CALLS:
         raise RadioCapReached(f"at most {MAX_RADIO_CALLS} radio calls per run")
-    if tag not in cfg.table_tags:
+    if not isinstance(tag, str):
+        raise ValueError("tag must be a string")
+    if tag.startswith("artist:("):
+        if tag not in {artist_prompt(a["name"]) for a in d.artists}:
+            raise ValueError("artist prompt was not added from the request")
+    elif tag not in cfg.table_tags:
         raise ValueError("tag is not in the live-checked table")      # a Reflexion trigger
     if not d.tags_used:
         kind = "first"
@@ -257,8 +292,12 @@ def _ladder(d: RunData, cfg: Config) -> Step:
             return Step("CURATE", "recall_same_tag", {"tag": d.tags_used[-1], "reason": why})
         if not d.other_tag_tried:
             cands = [t for t in cfg.table_tags if t not in d.tags_used]
-            if cands:
-                return Step("CURATE", "different_tag", {"candidates": cands, "reason": why})
+            arts = [artist_prompt(a["name"]) for a in d.artists if artist_prompt(a["name"]) not in d.tags_used]
+            if cands or arts:
+                detail = {"candidates": cands, "reason": why}
+                if arts:
+                    detail["artist_prompts"] = arts
+                return Step("CURATE", "different_tag", detail)
     if d.window_relaxed:
         return Step("STOP", "stuck", {"state": "CURATE", "reason": why})
     return Step("CURATE", "ask_user", {"reason": why, "offer": "relax_window", "window": list(RELAXED_WINDOW)})
@@ -282,8 +321,12 @@ def next_step(d: RunData, cfg: Config) -> Step:
         if not d.tracks:
             if d.radio_calls >= MAX_RADIO_CALLS:
                 return _ladder(d, cfg)
-            prompt = cfg.default_prompt if d.weather_failed else None
-            return Step("CURATE", "call_radio", {"default_prompt": prompt})
+            prompt = cfg.default_prompt if d.weather_failed and not d.artists else None
+            detail = {"default_prompt": prompt}
+            fresh = [artist_prompt(a["name"]) for a in d.artists if artist_prompt(a["name"]) not in d.tags_used]
+            if fresh:
+                detail["artist_prompts"] = fresh
+            return Step("CURATE", "call_radio", detail)
         if d.select_reason is None:
             return Step("CURATE", "select")
         return _ladder(d, cfg)
