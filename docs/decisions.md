@@ -183,3 +183,11 @@ prompts/CHANGELOG.md, the saved midterm traces (traces/ is git-ignored) and the 
 - Decided (student): a declined approval ends as answered, nothing is written, and the reply says so. This changes the midterm, where the decline went back to the model and the loop continued.
 - Proposed, not decided: the publisher worker calls final_answer (the supervisor calls no tools); code also downgrades answered to answered_low_confidence when the weather fallback or an "unknown" excluded window applied; a verdict field on the final event, so the status is not only in message text.
 - Not tested: none of this is in code yet.
+
+## states.py built - 2026-11-27
+- Built: states.py (repo root), a pure module that never imports encore. It holds the seven-state table with each state's tools, next_step() (first incomplete state and its action, no mutation), the tool gate (first out-of-list or pre-approval request is rejected, the second halts as policy_halt), the escalation ladder with the 3-radio-call cap, the excluded-window check, RunData (JSON round trip) and final_status() over the five midterm statuses. It is not wired into encore.py, and no driver exists yet.
+- Seen (student's pytest): tests/unit/test_states.py has 56 passed; the whole unit suite has 287 passed. A stand-in driver in the tests runs Golden 1, 2 and 3 against the fixtures with fake tools, plus a declined approval, an unknown excluded window and a failed verification.
+- Choices, open to change: LOCATION is complete once the city is known, and the weather worker picks the search result inside WEATHER; re-selects after failed verification are capped at 2 per run, not per pool; the window is relaxed to 2400-3600 s only after the user agrees, once; states.py does not charge the run budget (the driver will charge RunBudget from messages.py).
+- Placeholders: the tests use the table tags ambient, piano, jazz and folk, the default prompt ambient and the zone America/Denver. Config requires all three, so the real values are still to be chosen.
+- Gap: record_radio_call accepts only table tags, so a user-named artist prompt is rejected for now. That is the case Reflexion should handle, and it needs a decision.
+- Open: the weather-to-tag table, Golden 3's default prompt and fallback zone, how a user-named artist reaches lb_radio, and where each budget charge happens.
