@@ -173,3 +173,13 @@ prompts/CHANGELOG.md, the saved midterm traces (traces/ is git-ignored) and the 
 - Missing worker: the supervisor's synthesis checks that every expected worker reported. A missing optional one is logged and reported to the user. A missing required one aborts.
 - Not seen: the midterm's five statuses (the final_answer schema near encore.py line 1410 holds them; its values were not in the output) and whether budget_exceeded fits one of them.
 - Open: whether verify's 10 units are too heavy for 60; the fallback zone and default prompt for Golden 3.
+
+## Final statuses - 2026-11-27
+- Seen (encore.py): the final_answer enum has five values: answered, answered_low_confidence, stuck, budget_exceeded, policy_halt. Code overrides the model's status to budget_exceeded when steps >= step_limit (line 1954), traces stuck when the final_answer payload fails validation, traces a prose reply as answered_low_confidence (line 1932), and traces budget_exceeded at the step limit with no answer (line 2028). No code path sets policy_halt. The final event carries the status only inside its message text.
+- Seen (Midterm.html lines 181, 453, 465): the status is "set by the loop"; "the loop overrides the model if its claimed status contradicts what happened"; policy_halt means "a forbidden action was requested"; a declined approval is a resource error that the model reports or works around.
+- Corrected: budget_exceeded is already one of the five statuses, so Part 5.1 needs no new one. The "Not seen" line in the budget entry is stale. An earlier suggestion that code builds the final status was stronger than the midterm; the midterm lets the model pick and the loop override.
+- Decided (student): the model picks the status, and code overrides it for budget_exceeded and stuck, as in the midterm. A prose reply is answered_low_confidence.
+- Decided (student): policy_halt = the model requests a tool outside the offered list, or a write before approval. Code rejects the first attempt and logs it; a second attempt ends the run with policy_halt. The bound of two is a guess.
+- Decided (student): a declined approval ends as answered, nothing is written, and the reply says so. This changes the midterm, where the decline went back to the model and the loop continued.
+- Proposed, not decided: the publisher worker calls final_answer (the supervisor calls no tools); code also downgrades answered to answered_low_confidence when the weather fallback or an "unknown" excluded window applied; a verdict field on the final event, so the status is not only in message text.
+- Not tested: none of this is in code yet.
