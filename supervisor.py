@@ -96,8 +96,12 @@ def options_for(step: st.Step, cfg: st.Config) -> list:
     if a in ("request_approval", "write"):
         opts = [Option(a, "publisher", a)]
     elif a == "call_radio":
-        prompts = (det["default_prompt"],) if det.get("default_prompt") else \
-            tuple(det.get("artist_prompts", ())) + tuple(cfg.table_tags)
+        if det.get("default_prompt"):
+            prompts = (det["default_prompt"],)
+        elif det.get("first_tag"):
+            prompts = tuple(det.get("artist_prompts", ())) + (det["first_tag"],)
+        else:
+            prompts = tuple(det.get("artist_prompts", ())) + tuple(cfg.table_tags)
         opts = [Option(a, "curator", a, prompts)]
     elif a == "recall_same_tag":
         opts = [Option(a, "curator", a, (det["tag"],))]

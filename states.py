@@ -10,6 +10,7 @@ from dataclasses import asdict, dataclass, field, fields
 from typing import Iterable, Optional
 
 import track_select as ts
+import weather_tags as wt
 
 STATES = ("LOCATION", "WEATHER", "CONTEXT", "CURATE", "VERIFY", "APPROVE", "WRITE")
 OPTIONAL_STATES = frozenset({"WEATHER"})
@@ -90,6 +91,7 @@ class RunData:
     violations: int = 0
     halted: bool = False
     artists: list = field(default_factory=list)   # [{"name", "source"}] allowed for artist prompts
+    tag_order: Optional[list] = None     # candidate tags in the order to try; set once before the first radio call
     stop: Optional[dict] = None           # {"state", "kind", ...}
 
     def to_dict(self) -> dict:
@@ -216,6 +218,24 @@ def add_artist(d: RunData, name: str, source: str) -> str:
     return prompt
 
 
+def set_tag_order(d: RunData, cfg: Config, order: Iterable[str]) -> list:
+    """Store the candidate tags in the order to try (code's order, or the model's after tag_order.parse_order)."""
+    if d.tags_used:
+        raise ValueError("tag order must be set before the first radio call")
+    if d.weather_failed:
+        raise ValueError("no tag order when the weather failed (the default prompt applies)")
+    order = list(order)
+    if not order or not all(isinstance(t, str) for t in order):
+        raise ValueError("tag order must be a non-empty list of tags")
+    wt.ladder_order(order, cfg.table_tags)       # ValueError unless unique tags from the table
+    d.tag_order = order
+    return list(order)
+
+
+def _tag_ladder(d: RunData, cfg: Config) -> list:
+    return wt.ladder_order(d.tag_order, cfg.table_tags) if d.tag_order else list(cfg.table_tags)
+
+
 def record_radio_call(d: RunData, cfg: Config, tag: str, tracks: Optional[list] = None) -> str:
     """Charge one radio call. `tracks` is None when the call failed. Returns 'first', 'same' or 'different'."""
     if d.radio_calls >= MAX_RADIO_CALLS:
@@ -228,6 +248,8 @@ def record_radio_call(d: RunData, cfg: Config, tag: str, tracks: Optional[list] 
     elif tag not in cfg.table_tags:
         raise ValueError("tag is not in the live-checked table")      # a Reflexion trigger
     if not d.tags_used:
+        if d.tag_order and not tag.startswith("artist:(") and tag != d.tag_order[0]:
+            raise ValueError("first radio tag must be the first of the stored tag order")   # a Reflexion trigger
         kind = "first"
     elif tag == d.tags_used[-1] and not d.same_tag_retried:
         kind = "same"
@@ -291,7 +313,7 @@ def _ladder(d: RunData, cfg: Config) -> Step:
         if d.tags_used and not d.same_tag_retried:
             return Step("CURATE", "recall_same_tag", {"tag": d.tags_used[-1], "reason": why})
         if not d.other_tag_tried:
-            cands = [t for t in cfg.table_tags if t not in d.tags_used]
+            cands = [t for t in _tag_ladder(d, cfg) if t not in d.tags_used]
             arts = [artist_prompt(a["name"]) for a in d.artists if artist_prompt(a["name"]) not in d.tags_used]
             if cands or arts:
                 detail = {"candidates": cands, "reason": why}
@@ -323,6 +345,8 @@ def next_step(d: RunData, cfg: Config) -> Step:
                 return _ladder(d, cfg)
             prompt = cfg.default_prompt if d.weather_failed and not d.artists else None
             detail = {"default_prompt": prompt}
+            if prompt is None and d.tag_order and not d.tags_used:
+                detail["first_tag"] = d.tag_order[0]
             fresh = [artist_prompt(a["name"]) for a in d.artists if artist_prompt(a["name"]) not in d.tags_used]
             if fresh:
                 detail["artist_prompts"] = fresh
